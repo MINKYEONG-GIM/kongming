@@ -191,8 +191,9 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 
     description = st.text_area("메모")
 
-    attendee = st.selectbox("attendee", ["선택 안함"] + ATTENDEE_LIST)
-    attendee = None if attendee == "선택 안함" else attendee
+    attendee_options = ["선택 안함"] + ATTENDEE_LIST
+    selected_attendee = st.radio("attendee", attendee_options, horizontal=True)
+    attendee = None if selected_attendee == "선택 안함" else selected_attendee
 
     # 색상
     selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()), horizontal=True)
@@ -321,8 +322,15 @@ if st.session_state.get("inline_edit_event_id"):
             end_time = st.time_input("종료 시간", value=edt.time())
 
         description = st.text_area("메모", value=row["description"])
-        attendee = st.selectbox("attendee", ATTENDEE_LIST,
-                                index=ATTENDEE_LIST.index(row["attendee"]))
+        
+        # attendee chip selector
+        current_attendee = row.get("attendee") or ""
+        if current_attendee in ATTENDEE_LIST:
+            attendee_index = ATTENDEE_LIST.index(current_attendee)
+        else:
+            attendee_index = 0
+        attendee = st.radio("attendee", ATTENDEE_LIST, 
+                           index=attendee_index, horizontal=True)
 
         # color
         selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()),
