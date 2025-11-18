@@ -155,9 +155,15 @@ ATTENDEE_COLORS = {
 COLOR_CHIPS = ATTENDEE_COLORS.copy()
 
 ATTENDEE_TEXT_COLORS = {
-    "콩": "#000000",
+    "콩": "#ffffff",
     "밍깅": "#1f1f1f",
     "밍콩콩": "#ffffff",
+}
+
+ATTENDEE_EMOJIS = {
+    "콩": "🫛",
+    "밍깅": "👻",
+    "밍콩콩": "❤️",
 }
 
 
@@ -175,27 +181,33 @@ if "selected_attendees" not in st.session_state:
 
 st.sidebar.header("📝 약속 등록")
 
-default_start_dt = datetime.now().replace(second=0, microsecond=0)
-default_end_dt = (datetime.now() + timedelta(hours=1)).replace(second=0, microsecond=0)
+# 한국시간 기준 현재 시간 가져오기
+korea_tz = tz.gettz("Asia/Seoul")
+now_korea = datetime.now(korea_tz)
+today_korea = now_korea.date()
+
+default_start_dt = now_korea.replace(second=0, microsecond=0)
+# 종료시간 기본값: 24:00 (23:59:59)
+default_end_time = datetime.strptime("23:59:59", "%H:%M:%S").time()
 
 with st.sidebar.form("event_form", clear_on_submit=False):
     title = st.text_input("약속명*", key="new_title")
 
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input("약속일*", value=date.today())
+        start_date = st.date_input("약속일*", value=today_korea)
         start_time = st.time_input("시작 시간*", value=default_start_dt.time())
     with col2:
-        end_date = st.date_input("종료일*", value=date.today())
-        end_time = st.time_input("종료 시간*", value=default_end_dt.time())
-
-    description = st.text_area("메모")
+        end_date = st.date_input("종료일*", value=today_korea)
+        end_time = st.time_input("종료 시간*", value=default_end_time)
 
     attendee = st.radio("attendee*", ATTENDEE_LIST, horizontal=True)
 
     # 색상
     selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()), horizontal=True)
     color = COLOR_CHIPS[selected_chip]
+
+    description = st.text_area("메모")
 
     submitted = st.form_submit_button("➕ 약속 추가")
 
@@ -237,17 +249,33 @@ events_df = events_df[events_df["attendee"].isin(selected)]
 # FullCalendar용 변환
 events = []
 for _, r in events_df.iterrows():
+    attendee = r["attendee"]
+    emoji = ATTENDEE_EMOJIS.get(attendee, "")
+    
+    # 제목에 이모티콘 추가
+    if attendee == "콩":
+        # 콩: 제목 앞에 🫛
+        display_title = f"🫛 {r['title']}"
+    elif attendee == "밍깅":
+        # 밍깅: 제목 앞에 👻
+        display_title = f"👻 {r['title']}"
+    elif attendee == "밍콩콩":
+        # 밍콩콩: 제목 앞에 ❤️
+        display_title = f"❤️ {r['title']}"
+    else:
+        display_title = r["title"]
+    
     events.append({
         "id": str(r["id"]),
-        "title": r["title"],
+        "title": display_title,
         "start": r["start"],
         "end": r["end"],
         "allDay": bool(r["all_day"]),
         "color": r["color"],
-        "textColor": ATTENDEE_TEXT_COLORS.get(r["attendee"], "#ffffff"),
+        "textColor": ATTENDEE_TEXT_COLORS.get(attendee, "#ffffff"),
         "extendedProps": {
             "description": r["description"],
-            "attendee": r["attendee"],
+            "attendee": attendee,
         }
     })
 
@@ -315,8 +343,6 @@ if st.session_state.get("inline_edit_event_id"):
         with col2:
             end_date = st.date_input("종료일", value=edt.date())
             end_time = st.time_input("종료 시간", value=edt.time())
-
-        description = st.text_area("메모", value=row["description"])
         
         # attendee chip selector
         current_attendee = row.get("attendee") or ATTENDEE_LIST[0]
@@ -337,6 +363,8 @@ if st.session_state.get("inline_edit_event_id"):
         selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()),
                                  index=chip_index, horizontal=True)
         color = COLOR_CHIPS[selected_chip]
+
+        description = st.text_area("메모", value=row["description"])
 
         save = st.form_submit_button("저장")
 
