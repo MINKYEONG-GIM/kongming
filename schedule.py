@@ -195,10 +195,7 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 
     # 색상
     selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()), horizontal=True)
-    selected_color = COLOR_CHIPS[selected_chip]
-    custom_color = st.color_picker("직접 선택", value=selected_color)
-
-    color = custom_color if custom_color != selected_color else selected_color
+    color = COLOR_CHIPS[selected_chip]
 
     submitted = st.form_submit_button("➕ 약속 추가")
 
@@ -331,12 +328,15 @@ if st.session_state.get("inline_edit_event_id"):
                            index=attendee_index, horizontal=True)
 
         # color
+        # 현재 색상에 해당하는 칩 찾기
+        current_color = row.get("color", "")
+        if current_color in COLOR_CHIPS.values():
+            chip_index = list(COLOR_CHIPS.values()).index(current_color)
+        else:
+            chip_index = 0
         selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()),
-                                 index=list(COLOR_CHIPS.values()).index(row["color"]),
-                                 horizontal=True)
-        selected_color = COLOR_CHIPS[selected_chip]
-        custom_color = st.color_picker("직접 선택", value=selected_color)
-        color = custom_color if custom_color != selected_color else selected_color
+                                 index=chip_index, horizontal=True)
+        color = COLOR_CHIPS[selected_chip]
 
         save = st.form_submit_button("저장")
 
