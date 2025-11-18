@@ -97,7 +97,7 @@ def insert_event(title, start, end, all_day, color, description, attendee):
         int(all_day),
         color,
         description or "",
-        attendee or "",
+        attendee,
     ]
 
     events_ws.append_row(row, value_input_option="USER_ENTERED")
@@ -121,7 +121,7 @@ def update_event(event_id, title, start, end, all_day, color, description, atten
         int(all_day),
         color,
         description or "",
-        attendee or "",
+        attendee,
     ]
 
     events_ws.update(f"A{row_idx}:H{row_idx}", [row])
@@ -191,9 +191,7 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 
     description = st.text_area("메모")
 
-    attendee_options = ["선택 안함"] + ATTENDEE_LIST
-    selected_attendee = st.radio("attendee", attendee_options, horizontal=True)
-    attendee = None if selected_attendee == "선택 안함" else selected_attendee
+    attendee = st.radio("attendee*", ATTENDEE_LIST, horizontal=True)
 
     # 색상
     selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()), horizontal=True)
@@ -324,12 +322,12 @@ if st.session_state.get("inline_edit_event_id"):
         description = st.text_area("메모", value=row["description"])
         
         # attendee chip selector
-        current_attendee = row.get("attendee") or ""
+        current_attendee = row.get("attendee") or ATTENDEE_LIST[0]
         if current_attendee in ATTENDEE_LIST:
             attendee_index = ATTENDEE_LIST.index(current_attendee)
         else:
             attendee_index = 0
-        attendee = st.radio("attendee", ATTENDEE_LIST, 
+        attendee = st.radio("attendee*", ATTENDEE_LIST, 
                            index=attendee_index, horizontal=True)
 
         # color
