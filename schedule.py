@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-# streamlit run "C:\Users\KIM_MINKYEONG07\Desktop\온라인비부가제거\일정관리툴툴 개발.py"
-
 import streamlit as st
 from streamlit_calendar import calendar
 import sqlite3
@@ -11,6 +7,28 @@ from dateutil import tz
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
+
+SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+
+credentials = Credentials.from_service_account_info(
+    st.secrets["google_service_account"], 
+    scopes=SCOPES
+)
+
+gc = gspread.authorize(credentials)
+
+SPREADSHEET_ID = "1taVkkzhIgJAsjM2IshKHsnflNAItJ7PGKlQKZqUrI0s"
+sh = gc.open_by_key(SPREADSHEET_ID)
+
+events_ws = sh.worksheet("events")
+managers_ws = sh.worksheet("managers")
+
+
+
 
 # -------------------------
 # 기본 설정
