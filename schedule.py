@@ -147,8 +147,8 @@ st.title("🥰 밍콩콩 일정관리")
 ATTENDEE_LIST = ["콩", "밍깅", "밍콩콩"]
 
 ATTENDEE_COLORS = {
-    "콩": "#B4BDBD",
-    "밍깅": "#FBD7ED",
+    "콩": "#474747",
+    "밍깅": "#4b8ee5",
     "밍콩콩": "#EC7B87",
 }
 
@@ -156,7 +156,7 @@ COLOR_CHIPS = ATTENDEE_COLORS.copy()
 
 ATTENDEE_TEXT_COLORS = {
     "콩": "#ffffff",
-    "밍깅": "#1f1f1f",
+    "밍깅": "#ffffff",
     "밍콩콩": "#ffffff",
 }
 
