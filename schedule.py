@@ -195,17 +195,15 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input("약속일*", value=today_korea)
-        start_time = st.time_input("시작 시간*", value=default_start_dt.time())
+        start_date = st.date_input("약속일", value=today_korea)
+        start_time = st.time_input("시작 시간", value=default_start_dt.time())
     with col2:
-        end_date = st.date_input("종료일*", value=today_korea)
-        end_time = st.time_input("종료 시간*", value=default_end_time)
+        end_date = st.date_input("종료일", value=today_korea)
+        end_time = st.time_input("종료 시간", value=default_end_time)
 
-    attendee = st.radio("attendee*", ATTENDEE_LIST, horizontal=True)
-
-    # 색상
-    selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()), horizontal=True)
-    color = COLOR_CHIPS[selected_chip]
+    attendee = st.radio("참석자", ATTENDEE_LIST, horizontal=True)
+    # 참석자에 따라 컬러 자동 설정
+    color = ATTENDEE_COLORS.get(attendee, ATTENDEE_COLORS[ATTENDEE_LIST[0]])
 
     description = st.text_area("메모")
 
@@ -236,7 +234,7 @@ st.subheader("📆 일정 보기")
 
 # 필터 UI
 selected = st.multiselect(
-    "attendee 필터",
+    "참석자 필터",
     ATTENDEE_LIST,
     default=st.session_state.selected_attendees
 )
@@ -305,7 +303,7 @@ if state.get("eventClick"):
     st.write(f"**약속명:** {clicked['title']}")
     st.write(f"**시작:** {clicked['start']}")
     st.write(f"**종료:** {clicked['end']}")
-    st.write(f"**attendee:** {props.get('attendee','')}")
+    st.write(f"**참석자:** {props.get('attendee','')}")
     st.write(f"**메모:** {props.get('description','')}")
 
     # 수정
@@ -350,19 +348,10 @@ if st.session_state.get("inline_edit_event_id"):
             attendee_index = ATTENDEE_LIST.index(current_attendee)
         else:
             attendee_index = 0
-        attendee = st.radio("attendee*", ATTENDEE_LIST, 
+        attendee = st.radio("참석자*", ATTENDEE_LIST, 
                            index=attendee_index, horizontal=True)
-
-        # color
-        # 현재 색상에 해당하는 칩 찾기
-        current_color = row.get("color", "")
-        if current_color in COLOR_CHIPS.values():
-            chip_index = list(COLOR_CHIPS.values()).index(current_color)
-        else:
-            chip_index = 0
-        selected_chip = st.radio("컬러 칩", list(COLOR_CHIPS.keys()),
-                                 index=chip_index, horizontal=True)
-        color = COLOR_CHIPS[selected_chip]
+        # 참석자에 따라 컬러 자동 설정
+        color = ATTENDEE_COLORS.get(attendee, ATTENDEE_COLORS[ATTENDEE_LIST[0]])
 
         description = st.text_area("메모", value=row["description"])
 
