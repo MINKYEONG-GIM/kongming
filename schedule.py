@@ -201,7 +201,11 @@ with st.sidebar.form("event_form", clear_on_submit=False):
         end_date = st.date_input("종료일", value=today_korea)
         end_time = st.time_input("종료 시간", value=default_end_time)
 
-    attendee = st.radio("참석자", ATTENDEE_LIST, horizontal=True)
+    # 이모지가 포함된 참석자 옵션 리스트
+    attendee_options = [f"{ATTENDEE_EMOJIS.get(a, '')} {a}" for a in ATTENDEE_LIST]
+    selected_attendee_display = st.radio("참석자", attendee_options, horizontal=True)
+    # 선택된 값에서 이모지 제거하여 실제 attendee 값 추출
+    attendee = selected_attendee_display.split(" ", 1)[1] if " " in selected_attendee_display else selected_attendee_display
     # 참석자에 따라 컬러 자동 설정
     color = ATTENDEE_COLORS.get(attendee, ATTENDEE_COLORS[ATTENDEE_LIST[0]])
 
@@ -233,11 +237,15 @@ st.markdown("---")
 st.subheader("📆 일정 보기")
 
 # 필터 UI
-selected = st.multiselect(
+# 이모지가 포함된 참석자 옵션 리스트
+attendee_filter_options = [f"{ATTENDEE_EMOJIS.get(a, '')} {a}" for a in ATTENDEE_LIST]
+selected_display = st.multiselect(
     "참석자 필터",
-    ATTENDEE_LIST,
-    default=st.session_state.selected_attendees
+    attendee_filter_options,
+    default=[f"{ATTENDEE_EMOJIS.get(a, '')} {a}" for a in st.session_state.selected_attendees if a in ATTENDEE_LIST]
 )
+# 선택된 값에서 이모지 제거하여 실제 attendee 값 추출
+selected = [s.split(" ", 1)[1] if " " in s else s for s in selected_display]
 st.session_state.selected_attendees = selected
 
 # Fetch events
@@ -348,8 +356,12 @@ if st.session_state.get("inline_edit_event_id"):
             attendee_index = ATTENDEE_LIST.index(current_attendee)
         else:
             attendee_index = 0
-        attendee = st.radio("참석자*", ATTENDEE_LIST, 
+        # 이모지가 포함된 참석자 옵션 리스트
+        attendee_options = [f"{ATTENDEE_EMOJIS.get(a, '')} {a}" for a in ATTENDEE_LIST]
+        selected_attendee_display = st.radio("참석자*", attendee_options, 
                            index=attendee_index, horizontal=True)
+        # 선택된 값에서 이모지 제거하여 실제 attendee 값 추출
+        attendee = selected_attendee_display.split(" ", 1)[1] if " " in selected_attendee_display else selected_attendee_display
         # 참석자에 따라 컬러 자동 설정
         color = ATTENDEE_COLORS.get(attendee, ATTENDEE_COLORS[ATTENDEE_LIST[0]])
 
