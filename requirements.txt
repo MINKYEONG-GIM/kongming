@@ -2,3 +2,6 @@ streamlit
 streamlit-calendar
 pandas
 python-dateutil
+gspread
+google-auth
+
