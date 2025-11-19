@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_calendar import calendar
 import pandas as pd
 from datetime import datetime, date, timedelta
+import time
 from dateutil import tz
 
 import gspread
@@ -191,6 +192,10 @@ if "form_start_date" not in st.session_state:
     st.session_state.form_start_date = today_korea
 if "form_end_date" not in st.session_state:
     st.session_state.form_end_date = today_korea
+if "last_date_click_date" not in st.session_state:
+    st.session_state.last_date_click_date = None
+if "last_date_click_ts" not in st.session_state:
+    st.session_state.last_date_click_ts = None
 
 # 시작시간 기본값: 18:00
 default_start_time = datetime.strptime("18:00:00", "%H:%M:%S").time()
@@ -362,18 +367,34 @@ calendar_options = {
 state = calendar(events=events, options=calendar_options)
 
 if state.get("dateClick"):
-    clicked_date = parse_calendar_date(state["dateClick"].get("date"))
-    js_event = state["dateClick"].get("jsEvent", {}) or {}
-    click_detail = js_event.get("detail", 1) if isinstance(js_event, dict) else 1
+    click_payload = state["dateClick"]
+    raw_date = (
+        click_payload.get("date")
+        or click_payload.get("dateStr")
+        or click_payload.get("start")
+    )
+    clicked_date = parse_calendar_date(raw_date)
 
-    if click_detail >= 2 and clicked_date:
-        if (
-            st.session_state.get("form_start_date") != clicked_date
-            or st.session_state.get("form_end_date") != clicked_date
-        ):
+    if clicked_date:
+        prev_date = st.session_state.get("last_date_click_date")
+        prev_ts = st.session_state.get("last_date_click_ts")
+        now_ts = time.time()
+
+        double_clicked = (
+            prev_date == clicked_date
+            and prev_ts is not None
+            and now_ts - prev_ts <= 0.8
+        )
+
+        if double_clicked:
             st.session_state.form_start_date = clicked_date
             st.session_state.form_end_date = clicked_date
+            st.session_state.last_date_click_date = None
+            st.session_state.last_date_click_ts = None
             st.rerun()
+        else:
+            st.session_state.last_date_click_date = clicked_date
+            st.session_state.last_date_click_ts = now_ts
 
 # -------------------------
 # 일정 상세 + 인라인 수정
