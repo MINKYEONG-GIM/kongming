@@ -191,16 +191,33 @@ default_start_time = datetime.strptime("18:00:00", "%H:%M:%S").time()
 # 종료시간 기본값: 24:00 (23:59:59)
 default_end_time = datetime.strptime("23:59:59", "%H:%M:%S").time()
 
+def parse_time_string(value: str):
+    if not value:
+        return None
+    value = value.strip()
+    for fmt in ("%H:%M", "%H:%M:%S"):
+        try:
+            return datetime.strptime(value, fmt).time()
+        except ValueError:
+            continue
+    return None
+
 with st.sidebar.form("event_form", clear_on_submit=False):
     title = st.text_input("약속명*", key="new_title")
 
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input("약속일", value=today_korea)
-        start_time = st.time_input("시작 시간", value=default_start_time)
+        start_time_str = st.text_input(
+            "시작 시간 (HH:MM 또는 HH:MM:SS)",
+            value=default_start_time.strftime("%H:%M"),
+        )
     with col2:
         end_date = st.date_input("종료일", value=today_korea)
-        end_time = st.time_input("종료 시간", value=default_end_time)
+        end_time_str = st.text_input(
+            "종료 시간 (HH:MM 또는 HH:MM:SS)",
+            value=default_end_time.strftime("%H:%M"),
+        )
 
     # 이모지가 포함된 참석자 옵션 리스트
     attendee_options = [f"{ATTENDEE_EMOJIS.get(a, '')} {a}" for a in ATTENDEE_LIST]
@@ -218,16 +235,29 @@ with st.sidebar.form("event_form", clear_on_submit=False):
         if not title:
             st.warning("약속명은 필수입니다.")
         else:
-            start_dt = datetime.combine(start_date, start_time)
-            end_dt = datetime.combine(end_date, end_time)
+            start_time = parse_time_string(start_time_str)
+            end_time = parse_time_string(end_time_str)
 
-            if end_dt <= start_dt:
-                st.warning("종료 시간은 약속 시작 이후여야 합니다.")
+            if not start_time or not end_time:
+                st.warning("시간은 HH:MM 또는 HH:MM:SS 형식으로 입력해주세요.")
             else:
-                insert_event(title, start_dt.isoformat(), end_dt.isoformat(),
-                             False, color, description, attendee)
-                st.success("약속이 추가되었습니다!")
-                st.rerun()
+                start_dt = datetime.combine(start_date, start_time)
+                end_dt = datetime.combine(end_date, end_time)
+
+                if end_dt <= start_dt:
+                    st.warning("종료 시간은 약속 시작 이후여야 합니다.")
+                else:
+                    insert_event(
+                        title,
+                        start_dt.isoformat(),
+                        end_dt.isoformat(),
+                        False,
+                        color,
+                        description,
+                        attendee,
+                    )
+                    st.success("약속이 추가되었습니다!")
+                    st.rerun()
 
 
 # -------------------------
@@ -358,10 +388,16 @@ if st.session_state.get("inline_edit_event_id"):
         col1, col2 = st.columns(2)
         with col1:
             start_date = st.date_input("약속일", value=sdt.date())
-            start_time = st.time_input("시작 시간", value=sdt.time())
+            start_time_str = st.text_input(
+                "시작 시간 (HH:MM 또는 HH:MM:SS)",
+                value=sdt.strftime("%H:%M"),
+            )
         with col2:
             end_date = st.date_input("종료일", value=edt.date())
-            end_time = st.time_input("종료 시간", value=edt.time())
+            end_time_str = st.text_input(
+                "종료 시간 (HH:MM 또는 HH:MM:SS)",
+                value=edt.strftime("%H:%M"),
+            )
         
         # attendee chip selector
         current_attendee = row.get("attendee") or ATTENDEE_LIST[0]
@@ -383,12 +419,26 @@ if st.session_state.get("inline_edit_event_id"):
         save = st.form_submit_button("저장")
 
         if save:
-            start_dt = datetime.combine(start_date, start_time)
-            end_dt = datetime.combine(end_date, end_time)
+            start_time = parse_time_string(start_time_str)
+            end_time = parse_time_string(end_time_str)
 
-            update_event(event_id, title, start_dt.isoformat(),
-                         end_dt.isoformat(), False, color, description, attendee)
+            if not start_time or not end_time:
+                st.warning("시간은 HH:MM 또는 HH:MM:SS 형식으로 입력해주세요.")
+            else:
+                start_dt = datetime.combine(start_date, start_time)
+                end_dt = datetime.combine(end_date, end_time)
 
-            st.success("수정 완료!")
-            st.session_state.inline_edit_event_id = None
-            st.rerun()
+                update_event(
+                    event_id,
+                    title,
+                    start_dt.isoformat(),
+                    end_dt.isoformat(),
+                    False,
+                    color,
+                    description,
+                    attendee,
+                )
+
+                st.success("수정 완료!")
+                st.session_state.inline_edit_event_id = None
+                st.rerun()
