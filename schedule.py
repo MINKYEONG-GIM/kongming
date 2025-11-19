@@ -163,7 +163,7 @@ ATTENDEE_TEXT_COLORS = {
 
 ATTENDEE_EMOJIS = {
     "콩": "🫛",
-    "밍깅": "👻",
+    "밍깅": "👸",
     "밍콩콩": "❤️",
 }
 
@@ -320,8 +320,8 @@ for _, r in events_df.iterrows():
         # 콩: 제목 앞에 🫛
         display_title = f"🫛 {r['title']}"
     elif attendee == "밍깅":
-        # 밍깅: 제목 앞에 👻
-        display_title = f"👻 {r['title']}"
+        # 밍깅: 제목 앞에 👸
+        display_title = f"👸 {r['title']}"
     elif attendee == "밍콩콩":
         # 밍콩콩: 제목 앞에 ❤️
         display_title = f"❤️ {r['title']}"
