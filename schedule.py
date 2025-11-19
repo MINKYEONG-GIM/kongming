@@ -144,7 +144,7 @@ st.set_page_config(page_title="밍콩콩 달력", layout="wide")
 st.title("🥰 밍콩콩 일정관리")
 
 
-ATTENDEE_LIST = ["콩", "밍깅", "밍콩콩"]
+ATTENDEE_LIST = ["밍콩콩", "콩", "밍깅"]
 
 ATTENDEE_COLORS = {
     "콩": "#474747",
