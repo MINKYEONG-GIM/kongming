@@ -186,6 +186,12 @@ korea_tz = tz.gettz("Asia/Seoul")
 now_korea = datetime.now(korea_tz)
 today_korea = now_korea.date()
 
+# 일정 입력 기본 날짜 (세션 유지)
+if "form_start_date" not in st.session_state:
+    st.session_state.form_start_date = today_korea
+if "form_end_date" not in st.session_state:
+    st.session_state.form_end_date = today_korea
+
 # 시작시간 기본값: 18:00
 default_start_time = datetime.strptime("18:00:00", "%H:%M:%S").time()
 # 종료시간 기본값: 24:00 (23:59:59)
@@ -202,22 +208,37 @@ def parse_time_string(value: str):
             continue
     return None
 
+def parse_calendar_date(value: str):
+    if not value:
+        return None
+    normalized = value.replace("Z", "+00:00")
+    try:
+        return datetime.fromisoformat(normalized).date()
+    except ValueError:
+        try:
+            return datetime.strptime(normalized, "%Y-%m-%d").date()
+        except ValueError:
+            return None
+
 with st.sidebar.form("event_form", clear_on_submit=False):
     title = st.text_input("약속명*", key="new_title")
 
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input("약속일", value=today_korea)
+        start_date = st.date_input("약속일", value=st.session_state.form_start_date)
         start_time_str = st.text_input(
             "시작 시간 (HH:MM 또는 HH:MM:SS)",
             value=default_start_time.strftime("%H:%M"),
         )
     with col2:
-        end_date = st.date_input("종료일", value=today_korea)
+        end_date = st.date_input("종료일", value=st.session_state.form_end_date)
         end_time_str = st.text_input(
             "종료 시간 (HH:MM 또는 HH:MM:SS)",
             value=default_end_time.strftime("%H:%M"),
         )
+
+    st.session_state.form_start_date = start_date
+    st.session_state.form_end_date = end_date
 
     # 이모지가 포함된 참석자 옵션 리스트
     attendee_options = [f"{ATTENDEE_EMOJIS.get(a, '')} {a}" for a in ATTENDEE_LIST]
@@ -339,6 +360,20 @@ calendar_options = {
 }
 
 state = calendar(events=events, options=calendar_options)
+
+if state.get("dateClick"):
+    clicked_date = parse_calendar_date(state["dateClick"].get("date"))
+    js_event = state["dateClick"].get("jsEvent", {}) or {}
+    click_detail = js_event.get("detail", 1) if isinstance(js_event, dict) else 1
+
+    if click_detail >= 2 and clicked_date:
+        if (
+            st.session_state.get("form_start_date") != clicked_date
+            or st.session_state.get("form_end_date") != clicked_date
+        ):
+            st.session_state.form_start_date = clicked_date
+            st.session_state.form_end_date = clicked_date
+            st.rerun()
 
 # -------------------------
 # 일정 상세 + 인라인 수정
