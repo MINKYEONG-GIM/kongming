@@ -285,6 +285,18 @@ for _, r in events_df.iterrows():
             "attendee": attendee,
         }
     })
+# -------------------------
+# 이벤트 우선순위 정렬 (밍콩콩 → 콩 → 밍깅)
+# -------------------------
+
+priority = {
+    "밍콩콩": 1,
+    "콩": 2,
+    "밍깅": 3
+}
+
+events.sort(key=lambda e: priority.get(e["extendedProps"]["attendee"], 99))
+
 
 calendar_options = {
     "initialView": "dayGridMonth",
