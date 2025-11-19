@@ -186,7 +186,8 @@ korea_tz = tz.gettz("Asia/Seoul")
 now_korea = datetime.now(korea_tz)
 today_korea = now_korea.date()
 
-default_start_dt = now_korea.replace(second=0, microsecond=0)
+# 시작시간 기본값: 18:00
+default_start_time = datetime.strptime("18:00:00", "%H:%M:%S").time()
 # 종료시간 기본값: 24:00 (23:59:59)
 default_end_time = datetime.strptime("23:59:59", "%H:%M:%S").time()
 
@@ -196,7 +197,7 @@ with st.sidebar.form("event_form", clear_on_submit=False):
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input("약속일", value=today_korea)
-        start_time = st.time_input("시작 시간", value=default_start_dt.time())
+        start_time = st.time_input("시작 시간", value=default_start_time)
     with col2:
         end_date = st.date_input("종료일", value=today_korea)
         end_time = st.time_input("종료 시간", value=default_end_time)
