@@ -291,7 +291,7 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 # -------------------------
 
 st.markdown("---")
-st.subheader("밍콩일정")
+
 
 # 밍콩콩 NNN일 💕
 love_start_date = date(2025, 9, 6)
