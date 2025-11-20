@@ -232,13 +232,13 @@ with st.sidebar.form("event_form", clear_on_submit=False):
     with col1:
         start_date = st.date_input("약속일", value=st.session_state.form_start_date)
         start_time_str = st.text_input(
-            "시작 시간 (HH:MM 또는 HH:MM:SS)",
+            "시작 시간 (HH:MM)",
             value=default_start_time.strftime("%H:%M"),
         )
     with col2:
         end_date = st.date_input("종료일", value=st.session_state.form_end_date)
         end_time_str = st.text_input(
-            "종료 시간 (HH:MM 또는 HH:MM:SS)",
+            "종료 시간 (HH:MM)",
             value=default_end_time.strftime("%H:%M"),
         )
 
