@@ -265,7 +265,7 @@ with st.sidebar.form("event_form", clear_on_submit=False):
             end_time = parse_time_string(end_time_str)
 
             if not start_time or not end_time:
-                st.warning("시간은 HH:MM 또는 HH:MM:SS 형식으로 입력해주세요.")
+                st.warning("시간은 HH:MM 형식으로 입력해주세요.")
             else:
                 start_dt = datetime.combine(start_date, start_time)
                 end_dt = datetime.combine(end_date, end_time)
@@ -291,13 +291,15 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 # -------------------------
 
 st.markdown("---")
-st.subheader("밍콩일정")
 
 # 밍콩콩 NNN일 💕
 love_start_date = date(2025, 9, 6)
 now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
 love_days = (now_korea - love_start_date).days + 1
-st.markdown(f"<span style='font-size:1.25rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)
+st.subheader(f"<span style='font-size:1.25rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)
+
+
+
 
 # 필터 UI
 # 이모지가 포함된 참석자 옵션 리스트
@@ -485,7 +487,7 @@ if st.session_state.get("inline_edit_event_id"):
             end_time = parse_time_string(end_time_str)
 
             if not start_time or not end_time:
-                st.warning("시간은 HH:MM 또는 HH:MM:SS 형식으로 입력해주세요.")
+                st.warning("시간은 HH:MM 형식으로 입력해주세요.")
             else:
                 start_dt = datetime.combine(start_date, start_time)
                 end_dt = datetime.combine(end_date, end_time)
