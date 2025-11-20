@@ -142,7 +142,7 @@ def delete_event(event_id):
 # -------------------------
 
 st.set_page_config(page_title="밍콩콩 달력", layout="wide")
-st.title("🥰 밍콩콩 일정관리")
+# st.title("🥰 밍콩콩 일정관리")  # 타이틀 제거
 
 
 ATTENDEE_LIST = ["밍콩콩", "콩", "밍깅"]
@@ -297,7 +297,7 @@ st.markdown("---")
 love_start_date = date(2025, 9, 6)
 now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
 love_days = (now_korea - love_start_date).days + 1
-st.markdown(f"<span style='font-size:1.25rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)
+st.markdown(f"<span style='font-size:2.5rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)
 
 # 필터 UI
 # 이모지가 포함된 참석자 옵션 리스트
