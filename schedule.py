@@ -293,6 +293,12 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 st.markdown("---")
 st.subheader("📆 일정 보기")
 
+# 밍콩콩 NNN일 💕
+love_start_date = date(2023, 9, 6)
+now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
+love_days = (now_korea - love_start_date).days + 1
+st.markdown(f"<span style='font-size:1.25rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days:03d}일 💕</span>", unsafe_allow_html=True)
+
 # 필터 UI
 # 이모지가 포함된 참석자 옵션 리스트
 attendee_filter_options = [f"{ATTENDEE_EMOJIS.get(a, '')} {a}" for a in ATTENDEE_LIST]
