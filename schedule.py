@@ -232,13 +232,13 @@ with st.sidebar.form("event_form", clear_on_submit=False):
     with col1:
         start_date = st.date_input("약속일", value=st.session_state.form_start_date)
         start_time_str = st.text_input(
-            "시작 시간 (HH:MM 또는 HH:MM:SS)",
+            "시작 시간 (HH:MM)",
             value=default_start_time.strftime("%H:%M"),
         )
     with col2:
         end_date = st.date_input("종료일", value=st.session_state.form_end_date)
         end_time_str = st.text_input(
-            "종료 시간 (HH:MM 또는 HH:MM:SS)",
+            "종료 시간 (HH:MM)",
             value=default_end_time.strftime("%H:%M"),
         )
 
@@ -265,7 +265,7 @@ with st.sidebar.form("event_form", clear_on_submit=False):
             end_time = parse_time_string(end_time_str)
 
             if not start_time or not end_time:
-                st.warning("시간은 HH:MM 또는 HH:MM:SS 형식으로 입력해주세요.")
+                st.warning("시간은 HH:MM 형식으로 입력해주세요.")
             else:
                 start_dt = datetime.combine(start_date, start_time)
                 end_dt = datetime.combine(end_date, end_time)
@@ -451,13 +451,13 @@ if st.session_state.get("inline_edit_event_id"):
         with col1:
             start_date = st.date_input("약속일", value=sdt.date())
             start_time_str = st.text_input(
-                "시작 시간 (HH:MM 또는 HH:MM:SS)",
+                "시작 시간 (HH:MM)",
                 value=sdt.strftime("%H:%M"),
             )
         with col2:
             end_date = st.date_input("종료일", value=edt.date())
             end_time_str = st.text_input(
-                "종료 시간 (HH:MM 또는 HH:MM:SS)",
+                "종료 시간 (HH:MM)",
                 value=edt.strftime("%H:%M"),
             )
         
@@ -485,7 +485,7 @@ if st.session_state.get("inline_edit_event_id"):
             end_time = parse_time_string(end_time_str)
 
             if not start_time or not end_time:
-                st.warning("시간은 HH:MM 또는 HH:MM:SS 형식으로 입력해주세요.")
+                st.warning("시간은 HH:MM 형식으로 입력해주세요.")
             else:
                 start_dt = datetime.combine(start_date, start_time)
                 end_dt = datetime.combine(end_date, end_time)
