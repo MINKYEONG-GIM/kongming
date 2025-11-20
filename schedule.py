@@ -294,7 +294,7 @@ st.markdown("---")
 st.subheader("📆 일정 보기")
 
 # 밍콩콩 NNN일 💕
-love_start_date = date(2023, 9, 6)
+love_start_date = date(2025, 9, 6)
 now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
 love_days = (now_korea - love_start_date).days + 1
 st.markdown(f"<span style='font-size:1.25rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days:03d}일 💕</span>", unsafe_allow_html=True)
