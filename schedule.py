@@ -232,13 +232,13 @@ with st.sidebar.form("event_form", clear_on_submit=False):
     with col1:
         start_date = st.date_input("약속일", value=st.session_state.form_start_date)
         start_time_str = st.text_input(
-            "시작 시간 (HH:MM)",
+            "시작 시간 (HH:MM 또는 HH:MM:SS)",
             value=default_start_time.strftime("%H:%M"),
         )
     with col2:
         end_date = st.date_input("종료일", value=st.session_state.form_end_date)
         end_time_str = st.text_input(
-            "종료 시간 (HH:MM)",
+            "종료 시간 (HH:MM 또는 HH:MM:SS)",
             value=default_end_time.strftime("%H:%M"),
         )
 
@@ -291,13 +291,13 @@ with st.sidebar.form("event_form", clear_on_submit=False):
 # -------------------------
 
 st.markdown("---")
-st.subheader("📆 일정 보기")
+st.subheader("밍콩일정")
 
 # 밍콩콩 NNN일 💕
 love_start_date = date(2025, 9, 6)
 now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
 love_days = (now_korea - love_start_date).days + 1
-st.markdown(f"<span style='font-size:1.25rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days:03d}일 💕</span>", unsafe_allow_html=True)
+st.markdown(f"<span style='font-size:1.25rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)
 
 # 필터 UI
 # 이모지가 포함된 참석자 옵션 리스트
