@@ -366,9 +366,17 @@ calendar_options = {
     "selectable": True,
     "editable": False,
     "height": "auto",
-    # 이벤트 전체 배경에 색상이 차도록 블록 형태로 표시
     "eventDisplay": "block",
+    "eventTimeFormat": "",  # 달력에서 시간 텍스트 제거
 }
+
+st.markdown("""
+<style>
+.fc-event-time {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 state = calendar(events=events, options=calendar_options)
 
