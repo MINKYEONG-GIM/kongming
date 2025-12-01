@@ -7,7 +7,7 @@ config.py
 config.local.py
 secrets.py
 
-# Streamlit secrets
+# Streamlit secrets (실제 파일은 제외, 예시만 포함)
 .streamlit/secrets.toml
 
 # 환경 변수

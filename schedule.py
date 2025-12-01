@@ -9,13 +9,18 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # =========================================
-# 보안 설정 import (config.py에서 관리)
+# 보안 설정 (로컬에서는 config.py, 클라우드에서는 st.secrets 사용)
 # =========================================
-from config import (
-    SCOPES,
-    SPREADSHEET_ID,
-    LOVE_START_DATE,
-)
+try:
+    from config import SCOPES, SPREADSHEET_ID, LOVE_START_DATE
+except ImportError:
+    # Streamlit Cloud 환경에서 실행될 때 또는 config.py가 없을 때
+    SCOPES = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
+    SPREADSHEET_ID = st.secrets.get("spreadsheet_id", "")
+    LOVE_START_DATE = st.secrets.get("love_start_date", "2025-09-06")
 
 EVENT_COLUMNS = [
     "id",
