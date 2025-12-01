@@ -14,10 +14,6 @@ from google.oauth2.service_account import Credentials
 from config import (
     SCOPES,
     SPREADSHEET_ID,
-    ATTENDEE_LIST,
-    ATTENDEE_COLORS,
-    ATTENDEE_TEXT_COLORS,
-    ATTENDEE_EMOJIS,
     LOVE_START_DATE,
 )
 
@@ -145,6 +141,32 @@ def delete_event(event_id):
 st.set_page_config(page_title="밍콩콩 달력", layout="wide")
 # st.title("🥰 밍콩콩 일정관리")  # 타이틀 제거
 
+
+# -------------------------
+# 참석자 정보
+# -------------------------
+ATTENDEE_LIST = ["밍콩콩", "콩", "밍깅"]
+
+ATTENDEE_COLORS = {
+    "콩": "#474747",
+    "밍깅": "#4b8ee5",
+    "밍콩콩": "#EC7B87",
+}
+
+ATTENDEE_TEXT_COLORS = {
+    "콩": "#ffffff",
+    "밍깅": "#ffffff",
+    "밍콩콩": "#ffffff",
+}
+
+ATTENDEE_EMOJIS = {
+    "콩": "🫛",
+    "밍깅": "👸",
+    "밍콩콩": "❤️",
+}
+
+# 사랑 시작 날짜 (예: 2025-09-06)
+LOVE_START_DATE = "2025-09-06"
 
 # -------------------------
 # 필터 기본값
