@@ -8,17 +8,18 @@ from dateutil import tz
 import gspread
 from google.oauth2.service_account import Credentials
 
-
-# -------------------------
-# Google Sheets 연결 설정
-# -------------------------
-
-SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-
-SPREADSHEET_ID = "1taVkkzhIgJAsjM2IshKHsnflNAItJ7PGKlQKZqUrI0s"
+# =========================================
+# 보안 설정 import (config.py에서 관리)
+# =========================================
+from config import (
+    SCOPES,
+    SPREADSHEET_ID,
+    ATTENDEE_LIST,
+    ATTENDEE_COLORS,
+    ATTENDEE_TEXT_COLORS,
+    ATTENDEE_EMOJIS,
+    LOVE_START_DATE,
+)
 
 EVENT_COLUMNS = [
     "id",
@@ -143,29 +144,6 @@ def delete_event(event_id):
 
 st.set_page_config(page_title="밍콩콩 달력", layout="wide")
 # st.title("🥰 밍콩콩 일정관리")  # 타이틀 제거
-
-
-ATTENDEE_LIST = ["밍콩콩", "콩", "밍깅"]
-
-ATTENDEE_COLORS = {
-    "콩": "#474747",
-    "밍깅": "#4b8ee5",
-    "밍콩콩": "#EC7B87",
-}
-
-COLOR_CHIPS = ATTENDEE_COLORS.copy()
-
-ATTENDEE_TEXT_COLORS = {
-    "콩": "#ffffff",
-    "밍깅": "#ffffff",
-    "밍콩콩": "#ffffff",
-}
-
-ATTENDEE_EMOJIS = {
-    "콩": "🫛",
-    "밍깅": "👸",
-    "밍콩콩": "❤️",
-}
 
 
 # -------------------------
@@ -294,7 +272,7 @@ st.markdown("---")
 
 
 # 밍콩콩 NNN일 💕
-love_start_date = date(2025, 9, 6)
+love_start_date = datetime.strptime(LOVE_START_DATE, "%Y-%m-%d").date()
 now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
 love_days = (now_korea - love_start_date).days + 1
 st.markdown(f"<span style='font-size:2.5rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)

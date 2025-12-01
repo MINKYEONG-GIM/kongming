@@ -1,0 +1,47 @@
+# =========================================
+# 🔐 보안 & 개인정보 파일 제외
+# =========================================
+
+# 설정 파일
+config.py
+config.local.py
+secrets.py
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# 환경 변수
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
