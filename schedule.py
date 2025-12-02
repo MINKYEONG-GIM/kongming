@@ -33,7 +33,7 @@ EVENT_COLUMNS = [
     "description",
     "attendee",
 ]
-
+SPREADSHEET_ID = "1taVkkzhIgJAsjM2IshKHsnflNAItJ7PGKlQKZqUrI0s"
 
 @st.cache_resource
 def get_events_sheet():
