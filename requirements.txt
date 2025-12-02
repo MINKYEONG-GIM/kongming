@@ -4,4 +4,6 @@ pandas
 python-dateutil
 gspread
 google-auth
+cryptography
+pyasn1
 
