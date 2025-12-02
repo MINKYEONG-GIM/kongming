@@ -46,6 +46,50 @@ def get_events_sheet():
         gc = gspread.authorize(credentials)
         sh = gc.open_by_key(SPREADSHEET_ID)
         return sh.worksheet("events")
+    except gspread.exceptions.SpreadsheetNotFound:
+        st.error("❌ 스프레드시트를 찾을 수 없습니다.")
+        st.error(f"스프레드시트 ID: `{SPREADSHEET_ID}`")
+        st.info("💡 해결 방법:\n"
+                "1. 스프레드시트 ID가 올바른지 확인하세요\n"
+                "2. 스프레드시트가 삭제되지 않았는지 확인하세요\n"
+                "3. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
+                "   스프레드시트에 공유하고 편집 권한을 부여하세요")
+        st.stop()
+    except gspread.exceptions.APIError as e:
+        # APIError에서 상태 코드 추출 시도
+        error_code = 'Unknown'
+        error_str = str(e)
+        if hasattr(e, 'response') and hasattr(e.response, 'status_code'):
+            error_code = e.response.status_code
+        elif '404' in error_str:
+            error_code = 404
+        elif '403' in error_str:
+            error_code = 403
+        
+        if error_code == 404:
+            st.error("❌ 스프레드시트를 찾을 수 없습니다 (404 오류).")
+            st.error(f"스프레드시트 ID: `{SPREADSHEET_ID}`")
+            st.info("💡 해결 방법:\n"
+                    "1. 스프레드시트 ID가 올바른지 확인하세요\n"
+                    "2. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
+                    "   스프레드시트에 공유하고 편집 권한을 부여하세요\n"
+                    "3. 스프레드시트가 삭제되지 않았는지 확인하세요")
+        elif error_code == 403:
+            st.error("❌ 스프레드시트 접근 권한이 없습니다 (403 오류).")
+            st.info("💡 해결 방법:\n"
+                    "1. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
+                    "   스프레드시트에 공유하고 편집 권한을 부여하세요\n"
+                    "2. Google Cloud Console에서 API가 활성화되어 있는지 확인하세요")
+        else:
+            st.error(f"❌ Google Sheets API 오류: {str(e)}")
+            st.error(f"오류 코드: {error_code}")
+        st.stop()
+    except gspread.exceptions.WorksheetNotFound:
+        st.error("❌ 'events' 워크시트를 찾을 수 없습니다.")
+        st.info("💡 해결 방법:\n"
+                f"1. 스프레드시트(`{SPREADSHEET_ID}`)에 'events'라는 이름의 워크시트가 있는지 확인하세요\n"
+                "2. 워크시트 이름이 정확히 'events'인지 확인하세요 (대소문자 구분)")
+        st.stop()
     except requests.exceptions.ConnectionError as e:
         st.error(f"❌ 네트워크 연결 오류: Google Sheets API에 연결할 수 없습니다.")
         st.error(f"오류 상세: {str(e)}")
@@ -56,7 +100,16 @@ def get_events_sheet():
                 "4. 방화벽이나 프록시 설정을 확인하세요")
         st.stop()
     except Exception as e:
-        st.error(f"❌ Google Sheets 연결 오류: {str(e)}")
+        error_str = str(e)
+        if "404" in error_str or "not found" in error_str.lower():
+            st.error("❌ 스프레드시트를 찾을 수 없습니다.")
+            st.error(f"스프레드시트 ID: `{SPREADSHEET_ID}`")
+            st.info("💡 해결 방법:\n"
+                    "1. 스프레드시트 ID가 올바른지 확인하세요\n"
+                    "2. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
+                    "   스프레드시트에 공유하고 편집 권한을 부여하세요")
+        else:
+            st.error(f"❌ Google Sheets 연결 오류: {str(e)}")
         st.stop()
 
 
