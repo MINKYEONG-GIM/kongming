@@ -7,6 +7,7 @@ from dateutil import tz
 
 import gspread
 from google.oauth2.service_account import Credentials
+import requests
 
 # =========================================
 # 보안 설정 (로컬에서는 config.py, 클라우드에서는 st.secrets 사용)
@@ -36,14 +37,27 @@ EVENT_COLUMNS = [
 
 @st.cache_resource
 def get_events_sheet():
-    credentials = Credentials.from_service_account_info(
-        st.secrets["google_service_account"],
-        scopes=SCOPES,
-    )
+    try:
+        credentials = Credentials.from_service_account_info(
+            st.secrets["google_service_account"],
+            scopes=SCOPES,
+        )
 
-    gc = gspread.authorize(credentials)
-    sh = gc.open_by_key(SPREADSHEET_ID)
-    return sh.worksheet("events")
+        gc = gspread.authorize(credentials)
+        sh = gc.open_by_key(SPREADSHEET_ID)
+        return sh.worksheet("events")
+    except requests.exceptions.ConnectionError as e:
+        st.error(f"❌ 네트워크 연결 오류: Google Sheets API에 연결할 수 없습니다.")
+        st.error(f"오류 상세: {str(e)}")
+        st.info("💡 해결 방법:\n"
+                "1. 인터넷 연결을 확인하세요\n"
+                "2. 회사/학교 네트워크에서 Google API 접근이 차단되었을 수 있습니다\n"
+                "3. VPN을 사용하거나 다른 네트워크에서 시도해보세요\n"
+                "4. 방화벽이나 프록시 설정을 확인하세요")
+        st.stop()
+    except Exception as e:
+        st.error(f"❌ Google Sheets 연결 오류: {str(e)}")
+        st.stop()
 
 
 # -------------------------
@@ -51,25 +65,39 @@ def get_events_sheet():
 # -------------------------
 
 def fetch_events() -> pd.DataFrame:
-    events_ws = get_events_sheet()
-    rows = events_ws.get_all_records()
-
-    if not rows:
-        return pd.DataFrame(columns=EVENT_COLUMNS)
-
-    df = pd.DataFrame(rows)
-
-    # 빠진 컬럼 자동 생성
-    for col in EVENT_COLUMNS:
-        if col not in df.columns:
-            df[col] = None
-
     try:
-        df["id"] = df["id"].astype(int)
-    except:
-        pass
+        events_ws = get_events_sheet()
+        rows = events_ws.get_all_records()
 
-    return df[EVENT_COLUMNS]
+        if not rows:
+            return pd.DataFrame(columns=EVENT_COLUMNS)
+
+        df = pd.DataFrame(rows)
+
+        # 빠진 컬럼 자동 생성
+        for col in EVENT_COLUMNS:
+            if col not in df.columns:
+                df[col] = None
+
+        try:
+            df["id"] = df["id"].astype(int)
+        except:
+            pass
+
+        return df[EVENT_COLUMNS]
+    except Exception as e:
+        # StopException은 get_events_sheet()에서 st.stop()이 호출되었을 때 발생
+        # 앱을 중단하기 위해 다시 발생시킴
+        # StopException의 모듈 경로로 확인 (streamlit.runtime.scriptrunner 관련)
+        exception_type = type(e)
+        exception_module = getattr(exception_type, '__module__', '')
+        exception_name = exception_type.__name__
+        
+        # Streamlit의 StopException인지 확인
+        if 'streamlit' in exception_module and 'Stop' in exception_name:
+            raise
+        st.error(f"일정을 불러오는 중 오류가 발생했습니다: {str(e)}")
+        return pd.DataFrame(columns=EVENT_COLUMNS)
 
 
 def _get_new_event_id(events_ws):
