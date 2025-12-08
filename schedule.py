@@ -226,7 +226,6 @@ def delete_event(event_id):
 
 st.set_page_config(page_title="밍콩콩 달력", layout="wide")
 
-st.image("https://drive.google.com/uc?export=view&id=1Q5w3pBROSLyb5B91T5cC6DhPykAe2IjA", use_column_width=True)
 
 # st.title("🥰 밍콩콩 일정관리")  # 타이틀 제거
 
