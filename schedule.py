@@ -127,9 +127,9 @@ def get_memo_sheet():
     except gspread.exceptions.WorksheetNotFound:
         # memo 워크시트가 없으면 생성
         try:
-            ws = sh.add_worksheet(title="memo", rows=100, cols=2)
+            ws = sh.add_worksheet(title="memo", rows=100, cols=1)
             # 헤더 추가
-            ws.append_row(["timestamp", "content"], value_input_option="USER_ENTERED")
+            ws.append_row(["content"], value_input_option="USER_ENTERED")
             return ws
         except Exception as e:
             st.error(f"❌ 'memo' 워크시트를 생성할 수 없습니다: {str(e)}")
@@ -256,9 +256,8 @@ def fetch_memo():
         if not rows:
             return None
         
-        # 가장 최근 메모 반환 (timestamp 기준 내림차순)
-        sorted_rows = sorted(rows, key=lambda x: x.get('timestamp', ''), reverse=True)
-        return sorted_rows[0].get('content', '') if sorted_rows else None
+        # 첫 번째 메모 반환 (최근 메모 1개만 존재)
+        return rows[0].get('content', '') if rows else None
     except Exception as e:
         st.error(f"메모를 불러오는 중 오류가 발생했습니다: {str(e)}")
         return None
@@ -275,9 +274,8 @@ def save_memo(content):
             # 헤더를 제외한 모든 행 삭제
             memo_ws.delete_rows(2, len(all_rows))
         
-        # 새 메모 저장
-        timestamp = datetime.now(tz=tz.gettz("Asia/Seoul")).isoformat()
-        memo_ws.append_row([timestamp, content], value_input_option="USER_ENTERED")
+        # 새 메모 저장 (content만 저장)
+        memo_ws.append_row([content], value_input_option="USER_ENTERED")
         return True
     except Exception as e:
         st.error(f"메모를 저장하는 중 오류가 발생했습니다: {str(e)}")
