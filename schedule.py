@@ -127,9 +127,9 @@ def get_memo_sheet():
     except gspread.exceptions.WorksheetNotFound:
         # memo 워크시트가 없으면 생성
         try:
-            ws = sh.add_worksheet(title="memo", rows=100, cols=1)
+            ws = sh.add_worksheet(title="memo", rows=100, cols=2)
             # 헤더 추가
-            ws.append_row(["content"], value_input_option="USER_ENTERED")
+            ws.append_row(["timestamp", "content"], value_input_option="USER_ENTERED")
             return ws
         except Exception as e:
             st.error(f"❌ 'memo' 워크시트를 생성할 수 없습니다: {str(e)}")
@@ -248,7 +248,7 @@ def delete_event(event_id):
 # -------------------------
 
 def fetch_memo():
-    """최근 메모 1개를 불러옵니다."""
+    """가장 최신 메모 1개를 불러옵니다."""
     try:
         memo_ws = get_memo_sheet()
         rows = memo_ws.get_all_records()
@@ -256,26 +256,22 @@ def fetch_memo():
         if not rows:
             return None
         
-        # 첫 번째 메모 반환 (최근 메모 1개만 존재)
-        return rows[0].get('content', '') if rows else None
+        # timestamp 기준으로 정렬하여 가장 최신 메모 반환
+        sorted_rows = sorted(rows, key=lambda x: x.get('timestamp', ''), reverse=True)
+        return sorted_rows[0].get('content', '') if sorted_rows else None
     except Exception as e:
         st.error(f"메모를 불러오는 중 오류가 발생했습니다: {str(e)}")
         return None
 
 
 def save_memo(content):
-    """메모를 저장합니다. 기존 메모는 삭제하고 새로 저장합니다."""
+    """메모를 저장합니다. 기존 메모는 유지하고 새 메모를 추가합니다."""
     try:
         memo_ws = get_memo_sheet()
         
-        # 기존 모든 행 삭제 (헤더 제외)
-        all_rows = memo_ws.get_all_values()
-        if len(all_rows) > 1:
-            # 헤더를 제외한 모든 행 삭제
-            memo_ws.delete_rows(2, len(all_rows))
-        
-        # 새 메모 저장 (content만 저장)
-        memo_ws.append_row([content], value_input_option="USER_ENTERED")
+        # timestamp와 content 함께 저장
+        timestamp = datetime.now(tz=tz.gettz("Asia/Seoul")).isoformat()
+        memo_ws.append_row([timestamp, content], value_input_option="USER_ENTERED")
         return True
     except Exception as e:
         st.error(f"메모를 저장하는 중 오류가 발생했습니다: {str(e)}")
