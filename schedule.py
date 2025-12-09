@@ -469,17 +469,6 @@ with col1:
         else:
             st.warning("메모 내용을 입력해주세요.")
 
-# 저장된 메모 표시
-if saved_memo:
-    st.markdown("---")
-    st.markdown("#### 저장된 메모")
-    st.markdown(
-        f'<div style="border: 2px solid #EC7B87; border-radius: 10px; padding: 15px; background-color: #fff5f7;">'
-        f'<p style="white-space: pre-wrap; margin: 0;">{saved_memo}</p>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
-
 st.markdown("---")
 
 # 필터 UI
