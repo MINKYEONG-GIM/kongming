@@ -461,7 +461,7 @@ memo_text = st.text_area(
 # 저장 버튼
 col1, col2 = st.columns([1, 4])
 with col1:
-    if st.button("💾 저장하기", type="primary"):
+    if st.button("💾 save", type="primary"):
         if memo_text.strip():
             if save_memo(memo_text.strip()):
                 st.success("메모가 저장되었습니다!")
