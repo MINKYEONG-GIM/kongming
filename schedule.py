@@ -451,7 +451,7 @@ saved_memo = fetch_memo()
 
 # 메모 입력
 memo_text = st.text_area(
-    "메모를 입력하세요 (500자 이내)",
+    "------------------",
     value=saved_memo if saved_memo else "",
     height=150,
     max_chars=500,
