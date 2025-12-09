@@ -450,10 +450,17 @@ st.markdown(f"<span style='font-size:2.5rem;font-weight:bold;color:#EC7B87;'>밍
 
 # 메모 섹션
 st.markdown("---")
-st.markdown("### 📝 오늘의 메모")
 
 # 저장된 메모 불러오기
 saved_memo = fetch_memo()
+
+# 정사각형 박스로 메모 섹션 감싸기
+st.markdown(
+    '<div style="border: 2px solid #EC7B87; border-radius: 10px; padding: 20px; background-color: #fff5f7; margin: 10px 0;">',
+    unsafe_allow_html=True
+)
+
+st.markdown("### 📝 오늘의 메모")
 
 # 메모 입력
 memo_text = st.text_area(
@@ -477,14 +484,14 @@ with col1:
 
 # 저장된 메모 표시
 if saved_memo:
-    st.markdown("---")
-    st.markdown("#### 저장된 메모")
     st.markdown(
-        f'<div style="border: 2px solid #EC7B87; border-radius: 10px; padding: 15px; background-color: #fff5f7;">'
-        f'<p style="white-space: pre-wrap; margin: 0;">{saved_memo}</p>'
+        f'<div style="border: 1px solid #EC7B87; border-radius: 8px; padding: 15px; background-color: #ffffff; margin-top: 10px;">'
+        f'<p style="white-space: pre-wrap; margin: 0; color: #333;">{saved_memo}</p>'
         f'</div>',
         unsafe_allow_html=True
     )
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---")
 
