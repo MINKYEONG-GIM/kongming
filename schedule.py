@@ -36,7 +36,7 @@ EVENT_COLUMNS = [
 SPREADSHEET_ID = "1taVkkzhIgJAsjM2IshKHsnflNAItJ7PGKlQKZqUrI0s"
 
 @st.cache_resource
-def get_events_sheet():
+def get_spreadsheet():
     try:
         credentials = Credentials.from_service_account_info(
             st.secrets["google_service_account"],
@@ -44,8 +44,7 @@ def get_events_sheet():
         )
 
         gc = gspread.authorize(credentials)
-        sh = gc.open_by_key(SPREADSHEET_ID)
-        return sh.worksheet("events")
+        return gc.open_by_key(SPREADSHEET_ID)
     except gspread.exceptions.SpreadsheetNotFound:
         st.error("❌ 스프레드시트를 찾을 수 없습니다.")
         st.error(f"스프레드시트 ID: `{SPREADSHEET_ID}`")
@@ -84,12 +83,6 @@ def get_events_sheet():
             st.error(f"❌ Google Sheets API 오류: {str(e)}")
             st.error(f"오류 코드: {error_code}")
         st.stop()
-    except gspread.exceptions.WorksheetNotFound:
-        st.error("❌ 'events' 워크시트를 찾을 수 없습니다.")
-        st.info("💡 해결 방법:\n"
-                f"1. 스프레드시트(`{SPREADSHEET_ID}`)에 'events'라는 이름의 워크시트가 있는지 확인하세요\n"
-                "2. 워크시트 이름이 정확히 'events'인지 확인하세요 (대소문자 구분)")
-        st.stop()
     except requests.exceptions.ConnectionError as e:
         st.error(f"❌ 네트워크 연결 오류: Google Sheets API에 연결할 수 없습니다.")
         st.error(f"오류 상세: {str(e)}")
@@ -111,6 +104,36 @@ def get_events_sheet():
         else:
             st.error(f"❌ Google Sheets 연결 오류: {str(e)}")
         st.stop()
+
+
+@st.cache_resource
+def get_events_sheet():
+    sh = get_spreadsheet()
+    try:
+        return sh.worksheet("events")
+    except gspread.exceptions.WorksheetNotFound:
+        st.error("❌ 'events' 워크시트를 찾을 수 없습니다.")
+        st.info("💡 해결 방법:\n"
+                f"1. 스프레드시트(`{SPREADSHEET_ID}`)에 'events'라는 이름의 워크시트가 있는지 확인하세요\n"
+                "2. 워크시트 이름이 정확히 'events'인지 확인하세요 (대소문자 구분)")
+        st.stop()
+
+
+@st.cache_resource
+def get_memo_sheet():
+    sh = get_spreadsheet()
+    try:
+        return sh.worksheet("memo")
+    except gspread.exceptions.WorksheetNotFound:
+        # memo 워크시트가 없으면 생성
+        try:
+            ws = sh.add_worksheet(title="memo", rows=100, cols=2)
+            # 헤더 추가
+            ws.append_row(["timestamp", "content"], value_input_option="USER_ENTERED")
+            return ws
+        except Exception as e:
+            st.error(f"❌ 'memo' 워크시트를 생성할 수 없습니다: {str(e)}")
+            st.stop()
 
 
 # -------------------------
@@ -218,6 +241,47 @@ def delete_event(event_id):
         events_ws.delete_row(cell.row)
     except:
         return
+
+
+# -------------------------
+# 메모 관련 함수
+# -------------------------
+
+def fetch_memo():
+    """최근 메모 1개를 불러옵니다."""
+    try:
+        memo_ws = get_memo_sheet()
+        rows = memo_ws.get_all_records()
+        
+        if not rows:
+            return None
+        
+        # 가장 최근 메모 반환 (timestamp 기준 내림차순)
+        sorted_rows = sorted(rows, key=lambda x: x.get('timestamp', ''), reverse=True)
+        return sorted_rows[0].get('content', '') if sorted_rows else None
+    except Exception as e:
+        st.error(f"메모를 불러오는 중 오류가 발생했습니다: {str(e)}")
+        return None
+
+
+def save_memo(content):
+    """메모를 저장합니다. 기존 메모는 삭제하고 새로 저장합니다."""
+    try:
+        memo_ws = get_memo_sheet()
+        
+        # 기존 모든 행 삭제 (헤더 제외)
+        all_rows = memo_ws.get_all_values()
+        if len(all_rows) > 1:
+            # 헤더를 제외한 모든 행 삭제
+            memo_ws.delete_rows(2, len(all_rows))
+        
+        # 새 메모 저장
+        timestamp = datetime.now(tz=tz.gettz("Asia/Seoul")).isoformat()
+        memo_ws.append_row([timestamp, content], value_input_option="USER_ENTERED")
+        return True
+    except Exception as e:
+        st.error(f"메모를 저장하는 중 오류가 발생했습니다: {str(e)}")
+        return False
 
 
 # -------------------------
@@ -383,6 +447,46 @@ love_start_date = datetime.strptime(LOVE_START_DATE, "%Y-%m-%d").date()
 now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
 love_days = (now_korea - love_start_date).days + 1
 st.markdown(f"<span style='font-size:2.5rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)
+
+# 메모 섹션
+st.markdown("---")
+st.markdown("### 📝 오늘의 메모")
+
+# 저장된 메모 불러오기
+saved_memo = fetch_memo()
+
+# 메모 입력
+memo_text = st.text_area(
+    "메모를 입력하세요 (500자 이내)",
+    value=saved_memo if saved_memo else "",
+    height=150,
+    max_chars=500,
+    key="memo_input"
+)
+
+# 저장 버튼
+col1, col2 = st.columns([1, 4])
+with col1:
+    if st.button("💾 저장하기", type="primary"):
+        if memo_text.strip():
+            if save_memo(memo_text.strip()):
+                st.success("메모가 저장되었습니다!")
+                st.rerun()
+        else:
+            st.warning("메모 내용을 입력해주세요.")
+
+# 저장된 메모 표시
+if saved_memo:
+    st.markdown("---")
+    st.markdown("#### 저장된 메모")
+    st.markdown(
+        f'<div style="border: 2px solid #EC7B87; border-radius: 10px; padding: 15px; background-color: #fff5f7;">'
+        f'<p style="white-space: pre-wrap; margin: 0;">{saved_memo}</p>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+st.markdown("---")
 
 # 필터 UI
 # 이모지가 포함된 참석자 옵션 리스트
