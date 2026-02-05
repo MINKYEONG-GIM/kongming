@@ -582,6 +582,8 @@ calendar_options = {
     "height": "auto",
     # 이벤트 전체 배경에 색상이 차도록 블록 형태로 표시
     "eventDisplay": "block",
+    # 달력 월간 뷰에서 시간 표시 숨김
+    "displayEventTime": False,
 }
 
 state = calendar(events=events, options=calendar_options)
