@@ -461,6 +461,10 @@ st.markdown(f"<span style='font-size:2.5rem;font-weight:bold;color:#EC7B87;'>밍
 st.markdown(
     """
     <style>
+    /* 달력 이벤트 시간 숨김 */
+    .fc .fc-event-time {
+        display: none !important;
+    }
     .fc .attendee-kong .fc-event-title,
     .fc .attendee-kong .fc-event-time,
     .fc .attendee-kong .fc-event-main {
