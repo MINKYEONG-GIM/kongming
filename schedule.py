@@ -320,6 +320,12 @@ ATTENDEE_EMOJIS = {
     "밍콩콩": "❤️",
 }
 
+ATTENDEE_CLASSNAMES = {
+    "콩": "attendee-kong",
+    "밍깅": "attendee-mingging",
+    "밍콩콩": "attendee-mingkongkong",
+}
+
 # -------------------------
 # 필터 기본값
 # -------------------------
@@ -451,6 +457,30 @@ now_korea = datetime.now(tz=tz.gettz("Asia/Seoul")).date()
 love_days = (now_korea - love_start_date).days + 1
 st.markdown(f"<span style='font-size:2.5rem;font-weight:bold;color:#EC7B87;'>밍콩콩 {love_days}일 💕</span>", unsafe_allow_html=True)
 
+# 캘린더 글씨 색상 강제 적용
+st.markdown(
+    """
+    <style>
+    .fc .attendee-kong .fc-event-title,
+    .fc .attendee-kong .fc-event-time,
+    .fc .attendee-kong .fc-event-main {
+        color: #2C73B8 !important;
+    }
+    .fc .attendee-mingging .fc-event-title,
+    .fc .attendee-mingging .fc-event-time,
+    .fc .attendee-mingging .fc-event-main {
+        color: #5B4BB7 !important;
+    }
+    .fc .attendee-mingkongkong .fc-event-title,
+    .fc .attendee-mingkongkong .fc-event-time,
+    .fc .attendee-mingkongkong .fc-event-main {
+        color: #C2467E !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # 메모 섹션
 st.markdown("---")
 st.markdown("### 📝 오늘의 메모")
@@ -516,6 +546,7 @@ for _, r in events_df.iterrows():
         display_title = r["title"]
     
     event_color = ATTENDEE_COLORS.get(attendee, r.get("color") or "#CCEDFF")
+    event_class = ATTENDEE_CLASSNAMES.get(attendee, "")
     events.append({
         "id": str(r["id"]),
         "title": display_title,
@@ -524,6 +555,7 @@ for _, r in events_df.iterrows():
         "allDay": bool(r["all_day"]),
         "color": event_color,
         "textColor": ATTENDEE_TEXT_COLORS.get(attendee, "#ffffff"),
+        "classNames": [event_class] if event_class else [],
         "extendedProps": {
             "description": r["description"],
             "attendee": attendee,
