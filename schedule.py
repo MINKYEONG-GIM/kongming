@@ -10,6 +10,29 @@ from google.oauth2.service_account import Credentials
 import requests
 
 # =========================================
+# 비밀번호 보호 (Streamlit Secrets 사용)
+# =========================================
+if "is_authed" not in st.session_state:
+    st.session_state.is_authed = False
+
+app_password = st.secrets.get("app_password", "")
+
+if not app_password:
+    st.error("❌ 앱 비밀번호가 설정되어 있지 않습니다. Streamlit Secrets에 `app_password`를 추가하세요.")
+    st.stop()
+
+if not st.session_state.is_authed:
+    st.title("🔒 비밀번호가 필요합니다")
+    input_pw = st.text_input("비밀번호", type="password")
+    if st.button("입장"):
+        if input_pw == app_password:
+            st.session_state.is_authed = True
+            st.rerun()
+        else:
+            st.error("비밀번호가 올바르지 않습니다.")
+    st.stop()
+
+# =========================================
 # 보안 설정 (로컬에서는 config.py, 클라우드에서는 st.secrets 사용)
 # =========================================
 try:
@@ -22,6 +45,32 @@ except ImportError:
     ]
     SPREADSHEET_ID = st.secrets.get("spreadsheet_id", "")
     LOVE_START_DATE = st.secrets.get("love_start_date", "2025-09-06")
+
+# =========================================
+# 비밀번호 보호 (Streamlit Secrets 사용)
+# =========================================
+def require_password():
+    secret_password = st.secrets.get("app_password", "")
+    if not secret_password:
+        st.error("앱 비밀번호가 설정되어 있지 않습니다. Streamlit Secrets에 `app_password`를 추가해주세요.")
+        st.stop()
+
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+
+    if not st.session_state.authenticated:
+        st.title("🔒 비밀번호 입력")
+        input_password = st.text_input("비밀번호", type="password")
+        if input_password:
+            if input_password == secret_password:
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error("비밀번호가 올바르지 않습니다.")
+        st.stop()
+
+
+require_password()
 
 EVENT_COLUMNS = [
     "id",
