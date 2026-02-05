@@ -303,11 +303,10 @@ st.set_page_config(page_title="밍콩콩 달력", layout="wide")
 ATTENDEE_LIST = ["밍콩콩", "콩", "밍깅"]
 
 ATTENDEE_COLORS = {
-    "콩": "#474747",
-    "밍깅": "#4b8ee5",
-    "밍콩콩": "#EC7B87",
+    "콩": "#CCEDFF",
+    "밍깅": "#CCD1FF",
+    "밍콩콩": "#FDD2DB",
 }
-
 ATTENDEE_TEXT_COLORS = {
     "콩": "#ffffff",
     "밍깅": "#ffffff",
