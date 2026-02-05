@@ -43,7 +43,7 @@ except ImportError:
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive",
     ]
-    SPREADSHEET_ID = st.secrets.get("spreadsheet_id", "")
+    SPREADSHEET_ID = st.secrets.get("SPREADSHEET_ID", "")
     LOVE_START_DATE = st.secrets.get("love_start_date", "2025-09-06")
 
 
