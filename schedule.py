@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from streamlit_calendar import calendar
 import pandas as pd
 from datetime import datetime, date, timedelta
@@ -9,6 +8,29 @@ from dateutil import tz
 import gspread
 from google.oauth2.service_account import Credentials
 import requests
+
+# =========================================
+# 비밀번호 보호 (Streamlit Secrets 사용)
+# =========================================
+if "is_authed" not in st.session_state:
+    st.session_state.is_authed = False
+
+app_password = st.secrets.get("app_password", "")
+
+if not app_password:
+    st.error("❌ 앱 비밀번호가 설정되어 있지 않습니다. Streamlit Secrets에 `app_password`를 추가하세요.")
+    st.stop()
+
+if not st.session_state.is_authed:
+    st.title("🔒 비밀번호가 필요합니다")
+    input_pw = st.text_input("비밀번호", type="password")
+    if st.button("입장"):
+        if input_pw == app_password:
+            st.session_state.is_authed = True
+            st.rerun()
+        else:
+            st.error("비밀번호가 올바르지 않습니다.")
+    st.stop()
 
 # =========================================
 # 보안 설정 (로컬에서는 config.py, 클라우드에서는 st.secrets 사용)
@@ -25,27 +47,12 @@ except ImportError:
     LOVE_START_DATE = st.secrets.get("love_start_date", "2025-09-06")
 
 # =========================================
-# 비밀번호 보호 (Streamlit Secrets / 환경변수)
+# 비밀번호 보호 (Streamlit Secrets 사용)
 # =========================================
-def _get_app_password() -> str:
-    for key in ("app_password", "APP_PASSWORD"):
-        if key in st.secrets:
-            value = str(st.secrets.get(key, "")).strip()
-            if value:
-                return value
-    env_value = os.getenv("APP_PASSWORD", "").strip()
-    return env_value
-
-
 def require_password():
-    secret_password = _get_app_password()
+    secret_password = st.secrets.get("app_password", "")
     if not secret_password:
-        st.error(
-            "❌ 앱 비밀번호가 설정되어 있지 않습니다. "
-            "Streamlit Secrets의 최상위에 `app_password`를 추가하거나 "
-            "`APP_PASSWORD` 환경변수를 설정하세요."
-        )
-        st.info(f"현재 작업 디렉터리: `{os.getcwd()}`")
+        st.error("앱 비밀번호가 설정되어 있지 않습니다. Streamlit Secrets에 `app_password`를 추가해주세요.")
         st.stop()
 
     if "authenticated" not in st.session_state:
