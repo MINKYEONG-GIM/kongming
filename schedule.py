@@ -309,9 +309,9 @@ ATTENDEE_COLORS = {
 }
 
 ATTENDEE_TEXT_COLORS = {
-    "콩": "#ffffff",
-    "밍깅": "#ffffff",
-    "밍콩콩": "#ffffff",
+    "콩": "#2C73B8",
+    "밍깅": "#5B4BB7",
+    "밍콩콩": "#C2467E",
 }
 
 ATTENDEE_EMOJIS = {
