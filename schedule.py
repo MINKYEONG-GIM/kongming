@@ -72,12 +72,6 @@ def get_spreadsheet():
         return gc.open_by_key(SPREADSHEET_ID)
     except gspread.exceptions.SpreadsheetNotFound:
         st.error("❌ 스프레드시트를 찾을 수 없습니다.")
-        st.error(f"스프레드시트 ID: `{SPREADSHEET_ID}`")
-        st.info("💡 해결 방법:\n"
-                "1. 스프레드시트 ID가 올바른지 확인하세요\n"
-                "2. 스프레드시트가 삭제되지 않았는지 확인하세요\n"
-                "3. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
-                "   스프레드시트에 공유하고 편집 권한을 부여하세요")
         st.stop()
     except gspread.exceptions.APIError as e:
         # APIError에서 상태 코드 추출 시도
