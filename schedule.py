@@ -307,6 +307,7 @@ ATTENDEE_COLORS = {
     "밍깅": "#CCD1FF",
     "밍콩콩": "#FDD2DB",
 }
+
 ATTENDEE_TEXT_COLORS = {
     "콩": "#ffffff",
     "밍깅": "#ffffff",
@@ -514,13 +515,14 @@ for _, r in events_df.iterrows():
     else:
         display_title = r["title"]
     
+    event_color = ATTENDEE_COLORS.get(attendee, r.get("color") or "#CCEDFF")
     events.append({
         "id": str(r["id"]),
         "title": display_title,
         "start": r["start"],
         "end": r["end"],
         "allDay": bool(r["all_day"]),
-        "color": r["color"],
+        "color": event_color,
         "textColor": ATTENDEE_TEXT_COLORS.get(attendee, "#ffffff"),
         "extendedProps": {
             "description": r["description"],
