@@ -23,8 +23,10 @@ if not app_password:
 
 if not st.session_state.is_authed:
     st.title("오늘의 비밀번호는 무엇일까요? 🫒🫛")
-    input_pw = st.text_input("👻힌트는 콩과 밍에 관련있는 정보!", type="password")
-    if st.button("접속🚀"):
+    with st.form("password_form", clear_on_submit=False):
+        input_pw = st.text_input("👻힌트는 콩과 밍에 관련있는 정보!", type="password")
+        submitted = st.form_submit_button("접속🚀")
+    if submitted:
         if input_pw == app_password:
             st.session_state.is_authed = True
             st.rerun()
