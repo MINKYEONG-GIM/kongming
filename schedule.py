@@ -22,14 +22,14 @@ if not app_password:
     st.stop()
 
 if not st.session_state.is_authed:
-    st.title("🔒 비밀번호가 필요합니다")
-    input_pw = st.text_input("비밀번호", type="password")
-    if st.button("입장"):
+    st.title("🔒 비밀번호를 알고 계신가요?")
+    input_pw = st.text_input("👻힌트는 콩과 밍에 관련있는 정보!", type="password")
+    if st.button("접속🚀"):
         if input_pw == app_password:
             st.session_state.is_authed = True
             st.rerun()
         else:
-            st.error("비밀번호가 올바르지 않습니다.")
+            st.error("틀렸어요 😱 관계자외 출입금지")
     st.stop()
 
 # =========================================
