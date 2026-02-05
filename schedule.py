@@ -86,18 +86,10 @@ def get_spreadsheet():
         
         if error_code == 404:
             st.error("❌ 스프레드시트를 찾을 수 없습니다 (404 오류).")
-            st.error(f"스프레드시트 ID: `{SPREADSHEET_ID}`")
-            st.info("💡 해결 방법:\n"
-                    "1. 스프레드시트 ID가 올바른지 확인하세요\n"
-                    "2. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
-                    "   스프레드시트에 공유하고 편집 권한을 부여하세요\n"
-                    "3. 스프레드시트가 삭제되지 않았는지 확인하세요")
+
         elif error_code == 403:
             st.error("❌ 스프레드시트 접근 권한이 없습니다 (403 오류).")
-            st.info("💡 해결 방법:\n"
-                    "1. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
-                    "   스프레드시트에 공유하고 편집 권한을 부여하세요\n"
-                    "2. Google Cloud Console에서 API가 활성화되어 있는지 확인하세요")
+
         else:
             st.error(f"❌ Google Sheets API 오류: {str(e)}")
             st.error(f"오류 코드: {error_code}")
@@ -115,11 +107,7 @@ def get_spreadsheet():
         error_str = str(e)
         if "404" in error_str or "not found" in error_str.lower():
             st.error("❌ 스프레드시트를 찾을 수 없습니다.")
-            st.error(f"스프레드시트 ID: `{SPREADSHEET_ID}`")
-            st.info("💡 해결 방법:\n"
-                    "1. 스프레드시트 ID가 올바른지 확인하세요\n"
-                    "2. 서비스 계정 이메일(`mingging@kongmingcalendar.iam.gserviceaccount.com`)을\n"
-                    "   스프레드시트에 공유하고 편집 권한을 부여하세요")
+
         else:
             st.error(f"❌ Google Sheets 연결 오류: {str(e)}")
         st.stop()
